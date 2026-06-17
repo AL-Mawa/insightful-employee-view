@@ -9,38 +9,197 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppTasksRouteImport } from './routes/_app.tasks'
+import { Route as AppSettingsRouteImport } from './routes/_app.settings'
+import { Route as AppReportsRouteImport } from './routes/_app.reports'
+import { Route as AppProfileRouteImport } from './routes/_app.profile'
+import { Route as AppLeavesRouteImport } from './routes/_app.leaves'
+import { Route as AppEmployeesRouteImport } from './routes/_app.employees'
+import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppAttendanceRouteImport } from './routes/_app.attendance'
+import { Route as AppActivityRouteImport } from './routes/_app.activity'
+import { Route as AppEmployeesIdRouteImport } from './routes/_app.employees.$id'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppTasksRoute = AppTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsRoute = AppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLeavesRoute = AppLeavesRouteImport.update({
+  id: '/leaves',
+  path: '/leaves',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEmployeesRoute = AppEmployeesRouteImport.update({
+  id: '/employees',
+  path: '/employees',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAttendanceRoute = AppAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppActivityRoute = AppActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEmployeesIdRoute = AppEmployeesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppEmployeesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/activity': typeof AppActivityRoute
+  '/attendance': typeof AppAttendanceRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/employees': typeof AppEmployeesRouteWithChildren
+  '/leaves': typeof AppLeavesRoute
+  '/profile': typeof AppProfileRoute
+  '/reports': typeof AppReportsRoute
+  '/settings': typeof AppSettingsRoute
+  '/tasks': typeof AppTasksRoute
+  '/employees/$id': typeof AppEmployeesIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/activity': typeof AppActivityRoute
+  '/attendance': typeof AppAttendanceRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/employees': typeof AppEmployeesRouteWithChildren
+  '/leaves': typeof AppLeavesRoute
+  '/profile': typeof AppProfileRoute
+  '/reports': typeof AppReportsRoute
+  '/settings': typeof AppSettingsRoute
+  '/tasks': typeof AppTasksRoute
+  '/employees/$id': typeof AppEmployeesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_app/activity': typeof AppActivityRoute
+  '/_app/attendance': typeof AppAttendanceRoute
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/employees': typeof AppEmployeesRouteWithChildren
+  '/_app/leaves': typeof AppLeavesRoute
+  '/_app/profile': typeof AppProfileRoute
+  '/_app/reports': typeof AppReportsRoute
+  '/_app/settings': typeof AppSettingsRoute
+  '/_app/tasks': typeof AppTasksRoute
+  '/_app/employees/$id': typeof AppEmployeesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/activity'
+    | '/attendance'
+    | '/dashboard'
+    | '/employees'
+    | '/leaves'
+    | '/profile'
+    | '/reports'
+    | '/settings'
+    | '/tasks'
+    | '/employees/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/activity'
+    | '/attendance'
+    | '/dashboard'
+    | '/employees'
+    | '/leaves'
+    | '/profile'
+    | '/reports'
+    | '/settings'
+    | '/tasks'
+    | '/employees/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/login'
+    | '/_app/activity'
+    | '/_app/attendance'
+    | '/_app/dashboard'
+    | '/_app/employees'
+    | '/_app/leaves'
+    | '/_app/profile'
+    | '/_app/reports'
+    | '/_app/settings'
+    | '/_app/tasks'
+    | '/_app/employees/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +207,121 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/tasks': {
+      id: '/_app/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof AppTasksRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reports': {
+      id: '/_app/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AppReportsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/profile': {
+      id: '/_app/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/leaves': {
+      id: '/_app/leaves'
+      path: '/leaves'
+      fullPath: '/leaves'
+      preLoaderRoute: typeof AppLeavesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/employees': {
+      id: '/_app/employees'
+      path: '/employees'
+      fullPath: '/employees'
+      preLoaderRoute: typeof AppEmployeesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/attendance': {
+      id: '/_app/attendance'
+      path: '/attendance'
+      fullPath: '/attendance'
+      preLoaderRoute: typeof AppAttendanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/activity': {
+      id: '/_app/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof AppActivityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/employees/$id': {
+      id: '/_app/employees/$id'
+      path: '/$id'
+      fullPath: '/employees/$id'
+      preLoaderRoute: typeof AppEmployeesIdRouteImport
+      parentRoute: typeof AppEmployeesRoute
+    }
   }
 }
 
+interface AppEmployeesRouteChildren {
+  AppEmployeesIdRoute: typeof AppEmployeesIdRoute
+}
+
+const AppEmployeesRouteChildren: AppEmployeesRouteChildren = {
+  AppEmployeesIdRoute: AppEmployeesIdRoute,
+}
+
+const AppEmployeesRouteWithChildren = AppEmployeesRoute._addFileChildren(
+  AppEmployeesRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppActivityRoute: typeof AppActivityRoute
+  AppAttendanceRoute: typeof AppAttendanceRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppEmployeesRoute: typeof AppEmployeesRouteWithChildren
+  AppLeavesRoute: typeof AppLeavesRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppReportsRoute: typeof AppReportsRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppTasksRoute: typeof AppTasksRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppActivityRoute: AppActivityRoute,
+  AppAttendanceRoute: AppAttendanceRoute,
+  AppDashboardRoute: AppDashboardRoute,
+  AppEmployeesRoute: AppEmployeesRouteWithChildren,
+  AppLeavesRoute: AppLeavesRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppReportsRoute: AppReportsRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppTasksRoute: AppTasksRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
