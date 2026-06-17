@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth, useDB, api } from "@/lib/store";
+import type { Employee } from "@/lib/mock-data";
 import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,8 @@ function EmployeesPage() {
   const [dept, setDept] = useState("all");
   const [status, setStatus] = useState("all");
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingEmp, setEditingEmp] = useState<Employee | null>(null);
   const canManage = user?.role === "admin" || user?.role === "hr";
 
   const list = db.employees.filter((e) => {
@@ -108,7 +111,7 @@ function EmployeesPage() {
                       <div className="flex justify-end gap-1">
                         <Button asChild variant="ghost" size="icon"><Link to="/employees/$id" params={{ id: e.id }}><Eye className="h-4 w-4" /></Link></Button>
                         {canManage && <>
-                          <Button variant="ghost" size="icon"><Pencil className="h-4 w-4" /></Button>
+                          <Button variant="ghost" size="icon" onClick={() => { setEditingEmp(e); setEditOpen(true); }}><Pencil className="h-4 w-4" /></Button>
                           <Button variant="ghost" size="icon" className="text-destructive" onClick={() => { api.deleteEmployee(e.id); toast.success("Employee deleted"); }}><Trash2 className="h-4 w-4" /></Button>
                         </>}
                       </div>
@@ -123,18 +126,19 @@ function EmployeesPage() {
           </div>
         </CardContent>
       </Card>
+      {editingEmp && <EditEmployeeDialog employee={editingEmp} open={editOpen} onClose={() => { setEditOpen(false); setEditingEmp(null); }} />}
     </div>
   );
 }
 
 function AddEmployeeDialog({ onClose }: { onClose: () => void }) {
   const [form, setForm] = useState({
-    name: "", email: "", mobile: "", department: "Engineering", designation: "", joiningDate: new Date().toISOString().slice(0,10), salary: 60000, password: "emp123",
+    name: "", email: "", mobile: "", department: "Engineering", designation: "", joiningDate: new Date().toISOString().slice(0,10), salary: 60000, password: "tushar123",
   });
   function submit() {
     if (!form.name || !form.email) { toast.error("Name and email are required"); return; }
-    api.addEmployee({ ...form, status: "Active" });
-    toast.success("Employee added");
+    const newEmp = api.addEmployee({ ...form, status: "Active" });
+    toast.success(`Employee added! ID: ${newEmp.id}`);
     onClose();
   }
   return (
@@ -161,5 +165,51 @@ function AddEmployeeDialog({ onClose }: { onClose: () => void }) {
         <Button onClick={submit}>Create Employee</Button>
       </DialogFooter>
     </DialogContent>
+  );
+}
+
+function EditEmployeeDialog({ employee, open, onClose }: { employee: Employee; open: boolean; onClose: () => void }) {
+  const [form, setForm] = useState({
+    name: employee.name,
+    email: employee.email,
+    mobile: employee.mobile,
+    department: employee.department,
+    designation: employee.designation,
+    joiningDate: employee.joiningDate,
+    salary: employee.salary,
+    password: employee.password,
+  });
+  function submit() {
+    if (!form.name || !form.email) { toast.error("Name and email are required"); return; }
+    api.updateEmployee(employee.id, { ...form, status: employee.status });
+    toast.success("Employee updated");
+    onClose();
+  }
+  return (
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader><DialogTitle>Edit Employee</DialogTitle></DialogHeader>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="col-span-2 space-y-1"><Label>Full Name</Label><Input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} /></div>
+          <div className="space-y-1"><Label>Email</Label><Input value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} /></div>
+          <div className="space-y-1"><Label>Mobile</Label><Input value={form.mobile} onChange={(e) => setForm({...form, mobile: e.target.value})} /></div>
+          <div className="space-y-1">
+            <Label>Department</Label>
+            <Select value={form.department} onValueChange={(v) => setForm({...form, department: v})}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1"><Label>Designation</Label><Input value={form.designation} onChange={(e) => setForm({...form, designation: e.target.value})} /></div>
+          <div className="space-y-1"><Label>Joining Date</Label><Input type="date" value={form.joiningDate} onChange={(e) => setForm({...form, joiningDate: e.target.value})} /></div>
+          <div className="space-y-1"><Label>Salary</Label><Input type="number" value={form.salary} onChange={(e) => setForm({...form, salary: +e.target.value})} /></div>
+          <div className="col-span-2 space-y-1"><Label>Password</Label><Input value={form.password} onChange={(e) => setForm({...form, password: e.target.value})} /></div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button onClick={submit}>Update Employee</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

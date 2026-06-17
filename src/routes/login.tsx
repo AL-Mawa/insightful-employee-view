@@ -28,7 +28,7 @@ function LoginPage() {
   function fill(role: "admin" | "hr" | "employee") {
     if (role === "admin") { setU("admin"); setP("admin123"); }
     if (role === "hr") { setU("hr"); setP("hr123"); }
-    if (role === "employee") { setU("EMP001"); setP("emp123"); }
+    if (role === "employee") { setU("employee@example.com"); setP("emp123"); }
   }
 
   function onSubmit(e: React.FormEvent) {
@@ -86,8 +86,8 @@ function LoginPage() {
                   <CardContent className="p-0 pt-6">
                     <form onSubmit={onSubmit} className="space-y-4">
                       <div className="space-y-2">
-                        <Label>{r === "employee" ? "Employee ID" : "Username"}</Label>
-                        <Input value={u} onChange={(e) => setU(e.target.value)} placeholder={r === "employee" ? "EMP001" : r} autoComplete="username" />
+                        <Label>{r === "employee" ? "Email" : "Username"}</Label>
+                        <Input value={u} onChange={(e) => setU(e.target.value)} placeholder={r === "employee" ? "employee@example.com" : r} autoComplete="username" />
                       </div>
                       <div className="space-y-2">
                         <Label>Password</Label>
@@ -99,7 +99,7 @@ function LoginPage() {
                     <div className="mt-6 text-xs text-muted-foreground bg-muted/50 rounded-lg p-3 space-y-1">
                       <div><span className="font-semibold">Admin:</span> admin / admin123</div>
                       <div><span className="font-semibold">HR:</span> hr / hr123</div>
-                      <div><span className="font-semibold">Employee:</span> EMP001 / emp123</div>
+                      <div><span className="font-semibold">Employee:</span> employee@example.com / emp123</div>
                     </div>
                   </CardContent>
                 </Card>

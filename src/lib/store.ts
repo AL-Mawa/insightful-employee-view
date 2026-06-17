@@ -180,10 +180,13 @@ export function login(usernameOrId: string, password: string): User | null {
   }
   // employee login
   const d = getDB();
-  const emp = d.employees.find((e) => e.id.toLowerCase() === usernameOrId.toLowerCase() && e.password === password);
+  console.log("Login attempt:", { usernameOrId, password });
+  console.log("Employees in DB:", d.employees.map(e => ({ id: e.id, email: e.email, password: e.password })));
+  const emp = d.employees.find((e) => e.email.toLowerCase() === usernameOrId.toLowerCase() && e.password === password);
+  console.log("Found employee:", emp);
   if (emp) {
     const user: User = {
-      id: `u_${emp.id}`, username: emp.id, password: emp.password, role: "employee",
+      id: `u_${emp.id}`, username: emp.email, password: emp.password, role: "employee",
       employeeId: emp.id, name: emp.name, email: emp.email, avatar: emp.avatar,
     };
     localStorage.setItem(AUTH_KEY, JSON.stringify(user));
