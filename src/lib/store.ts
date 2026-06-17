@@ -1,4 +1,5 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { toast } from "sonner";
 import {
   type Employee, type AttendanceRecord, type Task, type Leave, type Activity, type User, type Role,
   seedEmployees, seedAttendance, seedTasks, seedLeaves, seedActivities,
@@ -180,10 +181,7 @@ export function login(usernameOrId: string, password: string): User | null {
   }
   // employee login
   const d = getDB();
-  console.log("Login attempt:", { usernameOrId, password });
-  console.log("Employees in DB:", d.employees.map(e => ({ id: e.id, email: e.email, password: e.password })));
   const emp = d.employees.find((e) => e.email.toLowerCase() === usernameOrId.toLowerCase() && e.password === password);
-  console.log("Found employee:", emp);
   if (emp) {
     const user: User = {
       id: `u_${emp.id}`, username: emp.email, password: emp.password, role: "employee",
@@ -201,6 +199,7 @@ export function logout() {
   const user = getCurrentUser();
   if (user?.employeeId) api.logLogout(user.employeeId);
   localStorage.removeItem(AUTH_KEY);
+  db = null; // Reset database cache to force reload from localStorage
   window.dispatchEvent(new Event("ems_auth_change"));
 }
 
@@ -210,11 +209,31 @@ export function useAuth() {
     const handler = () => setUser(getCurrentUser());
     window.addEventListener("ems_auth_change", handler);
     window.addEventListener("storage", handler);
+
+    // Handle laptop sleep/wake detection
+    let hiddenTime: number | null = null;
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        hiddenTime = Date.now();
+      } else if (hiddenTime) {
+        const timeHidden = Date.now() - hiddenTime;
+        // If page was hidden for more than 5 minutes, auto-logout employee
+        if (timeHidden > 5 * 60 * 1000 && user?.role === "employee") {
+          logout();
+          toast.error("Auto-logged out due to inactivity");
+        }
+        hiddenTime = null;
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     return () => {
       window.removeEventListener("ems_auth_change", handler);
       window.removeEventListener("storage", handler);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [user]);
   return user;
 }
 
@@ -232,7 +251,6 @@ export const ROLE_MENUS: Record<Role, { label: string; to: string; icon: string 
     { label: "Dashboard", to: "/dashboard", icon: "LayoutDashboard" },
     { label: "Employees", to: "/employees", icon: "Users" },
     { label: "Tasks", to: "/tasks", icon: "ListTodo" },
-    { label: "Attendance", to: "/attendance", icon: "CalendarCheck" },
     { label: "Leaves", to: "/leaves", icon: "CalendarOff" },
     { label: "Reports", to: "/reports", icon: "BarChart3" },
   ],

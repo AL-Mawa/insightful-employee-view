@@ -20,12 +20,13 @@ function Dashboard() {
   if (!user) return null;
 
   const today = new Date().toISOString().slice(0, 10);
-  const todayAtt = db.attendance.filter((a) => a.date === today);
+  const employeeIds = new Set(db.employees.map(e => e.id));
+  const todayAtt = db.attendance.filter((a) => a.date === today && employeeIds.has(a.employeeId));
   const present = todayAtt.filter((a) => a.status === "Present").length;
   const absent = db.employees.length - todayAtt.length + todayAtt.filter((a) => a.status === "Absent").length;
   const active = db.employees.filter((e) => e.status === "Active").length;
-  const completed = db.tasks.filter((t) => t.status === "Completed").length;
-  const pending = db.tasks.filter((t) => t.status === "Pending").length;
+  const completed = db.tasks.filter((t) => t.status === "Completed" && employeeIds.has(t.assignedTo)).length;
+  const pending = db.tasks.filter((t) => t.status === "Pending" && employeeIds.has(t.assignedTo)).length;
   const productivity = todayAtt.length ? Math.round(todayAtt.reduce((s, a) => s + a.productivity, 0) / todayAtt.length) : 0;
 
   if (user.role === "employee") return <EmployeeDashboard />;
@@ -231,18 +232,19 @@ function EmployeeDashboard() {
   if (!user?.employeeId) return null;
   const empId = user.employeeId;
   const today = new Date().toISOString().slice(0, 10);
-  const todayAtt = db.attendance.find((a) => a.employeeId === empId && a.date === today);
-  const myTasks = db.tasks.filter((t) => t.assignedTo === empId);
+  const employeeIds = new Set(db.employees.map(e => e.id));
+  const todayAtt = db.attendance.find((a) => a.employeeId === empId && a.date === today && employeeIds.has(a.employeeId));
+  const myTasks = db.tasks.filter((t) => t.assignedTo === empId && employeeIds.has(t.assignedTo));
   const completedTasks = myTasks.filter((t) => t.status === "Completed").length;
 
   const weekly = Array.from({ length: 7 }).map((_, i) => {
     const d = new Date(); d.setDate(d.getDate() - (6 - i));
     const date = d.toISOString().slice(0, 10);
-    const rec = db.attendance.find((a) => a.employeeId === empId && a.date === date);
+    const rec = db.attendance.find((a) => a.employeeId === empId && a.date === date && employeeIds.has(a.employeeId));
     return { day: d.toLocaleDateString(undefined, { weekday: "short" }), hours: rec?.workingHours || 0 };
   });
 
-  const myActivities = db.activities.filter((a) => a.employeeId === empId).slice(0, 10);
+  const myActivities = db.activities.filter((a) => a.employeeId === empId && employeeIds.has(a.employeeId)).slice(0, 10);
 
   return (
     <div className="space-y-6">

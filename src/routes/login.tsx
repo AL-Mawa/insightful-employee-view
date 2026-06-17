@@ -40,7 +40,7 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-background">
+    <div className="min-h-screen flex flex-col lg:grid lg:grid-cols-2 bg-background">
       <Toaster richColors />
       {/* Left brand panel */}
       <div className="hidden lg:flex flex-col justify-between p-12 text-white relative overflow-hidden" style={{ background: "var(--gradient-primary)" }}>
@@ -65,7 +65,7 @@ function LoginPage() {
       </div>
 
       {/* Right form panel */}
-      <div className="flex items-center justify-center p-6 lg:p-12">
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
           <div className="lg:hidden flex items-center gap-3 mb-8">
             <div className="h-10 w-10 rounded-xl grid place-items-center text-white" style={{ background: "var(--gradient-primary)" }}><Activity className="h-5 w-5" /></div>

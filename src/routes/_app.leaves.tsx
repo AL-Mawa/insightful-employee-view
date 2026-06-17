@@ -23,7 +23,7 @@ function LeavesPage() {
   const user = useAuth();
   const db = useDB();
   const [open, setOpen] = useState(false);
-  const isApprover = user?.role === "admin" || user?.role === "hr";
+  const isApprover = user?.role === "admin";
 
   const leaves = isApprover
     ? db.leaves

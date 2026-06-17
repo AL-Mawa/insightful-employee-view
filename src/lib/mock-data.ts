@@ -69,13 +69,13 @@ export interface Activity {
   type: "login" | "task" | "break" | "logout" | "complete";
 }
 
-const DEPARTMENTS = ["Engineering", "Design", "Marketing", "Sales", "HR", "Finance", "Operations"];
+const DEPARTMENTS = ["Design", "Marketing", "Sales", "HR", "Web", "Finance", "Operations"];
 const DESIGNATIONS: Record<string, string[]> = {
-  Engineering: ["Software Engineer", "Senior Engineer", "Tech Lead", "Engineering Manager"],
   Design: ["UI Designer", "UX Designer", "Design Lead"],
   Marketing: ["Marketing Specialist", "Content Strategist", "Marketing Manager"],
   Sales: ["Sales Executive", "Account Manager", "Sales Director"],
   HR: ["HR Executive", "HR Manager"],
+  Web: ["Web Developer", "Frontend Developer", "Backend Developer", "Full Stack Developer"],
   Finance: ["Accountant", "Finance Manager"],
   Operations: ["Operations Analyst", "Operations Manager"],
 };
@@ -113,10 +113,12 @@ export function seedEmployees(): Employee[] {
 export function seedAttendance(employees: Employee[]): AttendanceRecord[] {
   const records: AttendanceRecord[] = [];
   const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
   for (const emp of employees) {
     for (let d = 0; d < 30; d++) {
       const date = new Date(today);
       date.setDate(today.getDate() - d);
+      const dateStr = date.toISOString().slice(0, 10);
       const dow = date.getDay();
       if (dow === 0 || dow === 6) continue;
       const r = Math.random();
@@ -127,10 +129,15 @@ export function seedAttendance(employees: Employee[]): AttendanceRecord[] {
       if (r < 0.08) { status = "Absent"; login = null; logout = null; hours = 0; }
       else if (r < 0.12) { status = "Leave"; login = null; logout = null; hours = 0; }
       else if (r < 0.18) { status = "Half Day"; hours = 4 + Math.random(); }
+      // For today's date, don't set fake logout time - it should be set when employee actually logs out
+      if (dateStr === todayStr) {
+        logout = null;
+        hours = 0;
+      }
       records.push({
-        id: `${emp.id}-${date.toISOString().slice(0,10)}`,
+        id: `${emp.id}-${dateStr}`,
         employeeId: emp.id,
-        date: date.toISOString().slice(0, 10),
+        date: dateStr,
         loginTime: login,
         logoutTime: logout,
         workingHours: +hours.toFixed(1),

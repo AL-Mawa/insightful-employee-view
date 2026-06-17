@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_app/employees")({
   component: EmployeesPage,
 });
 
-const DEPARTMENTS = ["Engineering", "Design", "Marketing", "Sales", "HR", "Finance", "Operations"];
+const DEPARTMENTS = ["Design", "Marketing", "Sales", "HR", "Web", "Finance", "Operations"];
 
 function EmployeesPage() {
   const user = useAuth();

@@ -59,9 +59,9 @@ function AttendancePage() {
                   <TableCell>{a.date}</TableCell>
                   <TableCell>{a.loginTime || "—"}</TableCell>
                   <TableCell>{a.logoutTime || "—"}</TableCell>
-                  <TableCell>{a.workingHours}h</TableCell>
+                  <TableCell>{a.logoutTime ? `${a.workingHours}h` : "—"}</TableCell>
                   <TableCell><StatusBadge status={a.status} /></TableCell>
-                  <TableCell>{a.productivity}%</TableCell>
+                  <TableCell>{a.logoutTime ? `${a.productivity}%` : "—"}</TableCell>
                 </TableRow>
               );
             })}
